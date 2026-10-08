@@ -1,0 +1,142 @@
+{
+  "menu": [
+    {
+      "url": "/admin/companies",
+      "name": "Companies",
+      "icon": "menu-icon icon-base ti tabler-building-skyscraper",
+      "slug": "admin.companies",
+      "roles": [
+        "superadmin"
+      ]
+    },
+    {
+      "url": "/admin/invoices",
+      "name": "Invoices",
+      "icon": "menu-icon icon-base ti tabler-file-invoice",
+      "slug": "admin.invoices",
+      "roles": [
+        "superadmin"
+      ]
+    },
+    {
+      "url": "/admin/plans",
+      "name": "Plans",
+      "icon": "menu-icon icon-base ti tabler-package",
+      "slug": "admin.plans",
+      "roles": [
+        "superadmin"
+      ]
+    },
+    {
+      "url": "/admin/billing/settings",
+      "name": "Billing settings",
+      "icon": "menu-icon icon-base ti tabler-adjustments",
+      "slug": "admin.billing",
+      "roles": [
+        "superadmin"
+      ]
+    },
+    {
+      "url": "/dashboard",
+      "name": "Dashboard",
+      "icon": "menu-icon icon-base ti tabler-smart-home",
+      "slug": "dashboard",
+      "roles": [
+        "owner",
+        "manager",
+        "staff"
+      ]
+    },
+    {
+      "url": "/products",
+      "name": "Products",
+      "icon": "menu-icon icon-base ti tabler-devices",
+      "slug": "products",
+      "roles": [
+        "owner",
+        "manager",
+        "staff"
+      ]
+    },
+    {
+      "url": "/labels",
+      "name": "QR & Labels",
+      "icon": "menu-icon icon-base ti tabler-qrcode",
+      "slug": "labels",
+      "roles": [
+        "owner",
+        "manager",
+        "staff"
+      ]
+    },
+    {
+      "url": "/branches",
+      "name": "Branches",
+      "icon": "menu-icon icon-base ti tabler-building-store",
+      "slug": "branches",
+      "roles": [
+        "owner",
+        "manager"
+      ]
+    },
+    {
+      "url": "/analytics",
+      "name": "Analytics",
+      "icon": "menu-icon icon-base ti tabler-chart-bar",
+      "slug": "analytics",
+      "roles": [
+        "owner",
+        "manager"
+      ]
+    },
+    {
+      "name": "Settings",
+      "icon": "menu-icon icon-base ti tabler-settings",
+      "slug": [
+        "settings",
+        "users",
+        "categories",
+        "billing"
+      ],
+      "roles": [
+        "owner",
+        "manager"
+      ],
+      "submenu": [
+        {
+          "url": "/settings/company",
+          "name": "Company profile",
+          "slug": "settings.company",
+          "roles": [
+            "owner"
+          ]
+        },
+        {
+          "url": "/settings/billing",
+          "name": "Billing",
+          "slug": "billing",
+          "roles": [
+            "owner"
+          ]
+        },
+        {
+          "url": "/settings/users",
+          "name": "Users",
+          "slug": "users",
+          "roles": [
+            "owner"
+          ]
+        },
+        {
+          "url": "/settings/categories",
+          "name": "Categories & specs",
+          "slug": "categories",
+          "roles": [
+            "owner",
+            "manager"
+          ]
+        }
+      ]
+    }
+  ]
+}

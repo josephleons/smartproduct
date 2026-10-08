@@ -1,0 +1,74 @@
+// SmartLabel theme overrides. Vuexy core/vendor files stay untouched;
+// brand colours are applied here on top of the template's CSS variables.
+// Primary (#0F6680) is set through config/custom.php -> primaryColor.
+
+$sl-primary: #0f6680;
+$sl-sidebar: #174551;
+$sl-soft: #eaf4f7;
+$sl-canvas: #f7fafb;
+$sl-text: #1f2d33;
+
+[data-bs-theme='light'] {
+  --bs-body-bg: #{$sl-canvas};
+  --bs-body-color: #{$sl-text};
+  --bs-heading-color: #{$sl-text};
+
+  .layout-menu.menu-vertical {
+    --bs-menu-bg: #{$sl-sidebar};
+    --bs-menu-color: rgba(255, 255, 255, 0.78);
+    --bs-menu-active-color: #fff;
+    --bs-menu-hover-bg: rgba(255, 255, 255, 0.08);
+    --bs-menu-sub-active-bg: rgba(255, 255, 255, 0.1);
+    --bs-menu-header-color: rgba(255, 255, 255, 0.5);
+    background-color: $sl-sidebar !important;
+    color: rgba(255, 255, 255, 0.78);
+
+    .app-brand-text,
+    .menu-link,
+    .menu-toggle::after,
+    .layout-menu-toggle {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    .menu-inner > .menu-item.active > .menu-link {
+      background: $sl-primary !important;
+      color: #fff !important;
+      box-shadow: none;
+    }
+
+    .menu-sub > .menu-item.active > .menu-link {
+      color: #fff !important;
+    }
+
+    .menu-inner-shadow {
+      background: linear-gradient($sl-sidebar 41%, rgba($sl-sidebar, 0.11) 95%, rgba($sl-sidebar, 0));
+    }
+  }
+}
+
+.card {
+  --bs-card-border-radius: 0.75rem;
+}
+
+.bg-soft-teal {
+  background-color: $sl-soft !important;
+}
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.label-preview-frame {
+  width: 100%;
+  min-height: 420px;
+  border: 1px dashed var(--bs-border-color);
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+.qr-thumb svg {
+  width: 100%;
+  height: auto;
+}
