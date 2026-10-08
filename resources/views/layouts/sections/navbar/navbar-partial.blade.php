@@ -37,6 +37,23 @@
       @endif
     </li>
 
+    <li class="nav-item dropdown me-2 me-xl-1">
+      <a class="nav-link btn btn-icon btn-text-secondary rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);"
+        data-bs-toggle="dropdown" aria-expanded="false" aria-label="{{ __('Language') }}" title="{{ __('Language') }}">
+        <i class="icon-base ti tabler-language icon-md"></i>
+        <span class="ms-1 fw-medium text-uppercase small">{{ app()->getLocale() }}</span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end">
+        @foreach (config('app.locales') as $code => $name)
+          <li>
+            <a class="dropdown-item @if ($code === app()->getLocale()) active @endif" href="{{ route('locale.switch', $code) }}" lang="{{ $code }}">
+              {{ $name }}
+            </a>
+          </li>
+        @endforeach
+      </ul>
+    </li>
+
     @auth
       <li class="nav-item navbar-dropdown dropdown-user dropdown">
         <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown"

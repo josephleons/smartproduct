@@ -23,7 +23,7 @@
           <select name="category" class="form-select">
             <option value="">{{ __('All categories') }}</option>
             @foreach ($categories as $category)
-              <option value="{{ $category->id }}" @selected(request('category') == $category->id)>{{ $category->name }}</option>
+              <option value="{{ $category->id }}" @selected(request('category') == $category->id)>{{ __($category->name) }}</option>
             @endforeach
           </select>
         </div>
@@ -77,7 +77,7 @@
                   <a href="{{ route('products.show', $product) }}" class="text-heading fw-medium">{{ $product->name() }}</a><br>
                   <small class="text-body-secondary">{{ $product->sku }} · {{ $product->condition->label() }}</small>
                 </td>
-                <td>{{ $product->category->name }}</td>
+                <td>{{ __($product->category->name) }}</td>
                 <td>{{ $product->branch->name }}</td>
                 <td class="text-end text-nowrap">{{ money($product->price) }}</td>
                 <td class="text-end">{{ $product->qrCode?->scans_count ?? 0 }}</td>

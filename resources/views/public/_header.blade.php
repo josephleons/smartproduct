@@ -9,5 +9,6 @@
         <small>{{ $branch->name }}@if ($branch->location) · {{ $branch->location }}@endif</small>
       @endisset
     </div>
+    <x-language-switcher class="lang" />
   </div>
 </header>

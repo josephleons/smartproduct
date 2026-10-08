@@ -31,6 +31,9 @@ class ProductSpec extends Model
 
     public function displayValue(): string
     {
-        return $this->unit ? $this->value.' '.$this->unit : $this->value;
+        // Yes/No (boolean fields) and units are stored in English and translated on display.
+        $value = in_array($this->value, ['Yes', 'No'], true) ? __($this->value) : $this->value;
+
+        return $this->unit ? $value.' '.__($this->unit) : $value;
     }
 }

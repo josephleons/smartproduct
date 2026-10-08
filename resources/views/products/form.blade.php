@@ -95,7 +95,7 @@
               <select id="category_id" name="category_id" class="form-select @error('category_id') is-invalid @enderror" required>
                 <option value="">{{ __('Choose…') }}</option>
                 @foreach ($categories as $category)
-                  <option value="{{ $category->id }}" @selected(old('category_id', $product->category_id) == $category->id)>{{ $category->name }}</option>
+                  <option value="{{ $category->id }}" @selected(old('category_id', $product->category_id) == $category->id)>{{ __($category->name) }}</option>
                 @endforeach
               </select>
               @error('category_id') <div class="invalid-feedback">{{ $message }}</div> @enderror

@@ -16,10 +16,10 @@ class CategoryFieldsController extends Controller
         return response()->json([
             'fields' => $category->specFields->map(fn (CategorySpecField $field) => [
                 'key' => $field->key,
-                'label' => $field->label,
+                'label' => __($field->label),
                 'type' => $field->type->value,
                 'options' => $field->options ?? [],
-                'unit' => $field->unit,
+                'unit' => $field->unit ? __($field->unit) : null,
                 'required' => $field->is_required,
             ]),
         ]);

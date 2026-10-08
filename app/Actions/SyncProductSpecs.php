@@ -26,7 +26,8 @@ class SyncProductSpecs
                 if ($value === null || $value === '') {
                     continue;
                 }
-                $value = filter_var($value, FILTER_VALIDATE_BOOLEAN) ? __('Yes') : __('No');
+                // Stored in English whatever the seller's language; ProductSpec::displayValue() translates it.
+                $value = filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 'Yes' : 'No';
             }
 
             if ($value === null || trim((string) $value) === '') {

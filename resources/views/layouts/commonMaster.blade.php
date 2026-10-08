@@ -32,7 +32,7 @@
 
 @endphp
 
-<html lang="{{ session()->get('locale') ?? app()->getLocale() }}"
+<html lang="{{ app()->getLocale() }}"
       class="{{ $navbarType ?? '' }} {{ $contentLayout ?? '' }} {{ $menuFixed ?? '' }} {{ $menuCollapsed ?? '' }} {{ $footerFixed ?? '' }} {{ $customizerHidden ?? '' }}"
       dir="{{ $configData['textDirection'] }}" data-skin="{{ $skinName }}"
       data-assets-path="{{ asset('/assets') . '/' }}"

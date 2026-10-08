@@ -55,7 +55,7 @@ class ProductRequest extends FormRequest
         $attributes = ['category_id' => __('category'), 'branch_id' => __('branch')];
 
         foreach ($this->specFields() as $field) {
-            $attributes['specs.'.$field->key] = $field->label;
+            $attributes['specs.'.$field->key] = __($field->label);
         }
 
         return $attributes;

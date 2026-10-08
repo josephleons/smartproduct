@@ -87,7 +87,13 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'sw'),
+
+    // Languages offered by the SW / EN switcher (code => name in that language).
+    'locales' => [
+        'sw' => 'Kiswahili',
+        'en' => 'English',
+    ],
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 

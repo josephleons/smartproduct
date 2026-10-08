@@ -19,7 +19,7 @@
         <tbody>
           @foreach ($categories as $category)
             <tr>
-              <td class="fw-medium text-heading">{{ $category->name }}</td>
+              <td class="fw-medium text-heading">{{ __($category->name) }}</td>
               <td class="text-end">{{ $category->spec_fields_count }}</td>
               <td>
                 @if ($category->isSystem())

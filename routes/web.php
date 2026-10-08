@@ -12,6 +12,7 @@ use App\Http\Controllers\CategoryFieldsController;
 use App\Http\Controllers\CompanySettingsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LabelController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductQuickUpdateController;
 use App\Http\Controllers\PublicProductController;
@@ -35,6 +36,8 @@ Route::middleware('throttle:60,1')->group(function () {
 // created by the platform superadmin below.
 
 Route::redirect('/', '/dashboard');
+
+Route::get('/language/{locale}', LocaleController::class)->name('locale.switch');
 
 Route::middleware(['auth', 'tenant', 'subscription'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');

@@ -9,9 +9,10 @@ class PublicProductCache
 {
     public const TTL_SECONDS = 300;
 
-    public static function key(string $token): string
+    /** The page is rendered in the visitor's language, so each locale has its own entry. */
+    public static function key(string $token, ?string $locale = null): string
     {
-        return 'public-product:'.$token;
+        return 'public-product:'.$token.':'.($locale ?? app()->getLocale());
     }
 
     public static function remember(string $token, Closure $callback): mixed
@@ -21,8 +22,12 @@ class PublicProductCache
 
     public static function forget(?string $token): void
     {
-        if ($token) {
-            Cache::forget(self::key($token));
+        if (! $token) {
+            return;
+        }
+
+        foreach (array_keys(config('app.locales')) as $locale) {
+            Cache::forget(self::key($token, $locale));
         }
     }
 }

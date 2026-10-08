@@ -13,6 +13,7 @@
           @yield('auth-card')
         </div>
       </div>
+      <x-language-switcher class="d-block text-center mt-4 small" />
     </div>
   </div>
 </div>

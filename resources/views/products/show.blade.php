@@ -40,7 +40,7 @@
               <div><small class="text-body-secondary d-block">{{ __('Serial number') }}</small><span class="fw-medium">{{ $product->serial_number }}</span></div>
             @endif
             @foreach ($product->specs as $spec)
-              <div><small class="text-body-secondary d-block">{{ $spec->label }}</small><span class="fw-medium">{{ $spec->displayValue() }}</span></div>
+              <div><small class="text-body-secondary d-block">{{ __($spec->label) }}</small><span class="fw-medium">{{ $spec->displayValue() }}</span></div>
             @endforeach
           </div>
           @if ($product->description)

@@ -39,7 +39,8 @@ class PublicProductController extends Controller
             'phone' => $this->phoneNumber($product),
         ])->render());
 
-        return response($html)->header('Cache-Control', 'public, max-age=60');
+        // Vary on Cookie: the language switcher sets a cookie, and the page must follow it.
+        return response($html)->header('Cache-Control', 'public, max-age=60')->header('Vary', 'Cookie');
     }
 
     public function go(Request $request, string $token, string $channel): RedirectResponse|Response

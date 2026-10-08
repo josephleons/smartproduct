@@ -19,6 +19,8 @@
     .top img { width: 36px; height: 36px; border-radius: 8px; background: #fff; object-fit: contain; }
     .top b { display: block; font-size: 16px; }
     .top small { opacity: .85; }
+    .top .lang { margin-left: auto; font-size: 13px; white-space: nowrap; }
+    .top .lang a { color: #fff; }
     .card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-top: 16px; }
     h1 { font-size: 21px; line-height: 1.25; margin: 8px 0 4px; }
     .price { font-size: 26px; font-weight: 700; color: var(--p); margin: 8px 0 0; }

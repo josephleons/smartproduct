@@ -95,7 +95,7 @@
           @forelse ($recentProducts as $product)
             <tr>
               <td><a href="{{ route('products.show', $product) }}" class="text-heading">{{ $product->name() }}</a><br><small class="text-body-secondary">{{ $product->sku }}</small></td>
-              <td>{{ $product->category->name }}</td>
+              <td>{{ __($product->category->name) }}</td>
               <td>{{ $product->branch->name }}</td>
               <td class="text-end text-nowrap">{{ money($product->price) }}</td>
               <td><x-status-badge :status="$product->status" /></td>

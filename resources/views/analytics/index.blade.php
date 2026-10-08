@@ -34,7 +34,7 @@
       <select name="category" class="form-select w-auto" onchange="this.form.submit()">
         <option value="">{{ __('All categories') }}</option>
         @foreach ($categories as $category)
-          <option value="{{ $category->id }}" @selected($filters['category_id'] === $category->id)>{{ $category->name }}</option>
+          <option value="{{ $category->id }}" @selected($filters['category_id'] === $category->id)>{{ __($category->name) }}</option>
         @endforeach
       </select>
     </form>

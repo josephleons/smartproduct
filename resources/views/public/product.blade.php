@@ -9,7 +9,7 @@
     <section class="card">
       <span class="badge b-{{ $product->status->value }}">{{ $product->status->label() }}</span>
       <h1>{{ $product->name() }}</h1>
-      <div class="muted">{{ $product->category->name }}</div>
+      <div class="muted">{{ __($product->category->name) }}</div>
 
       @if ($showPrice)
         <p class="price">{{ money($product->price) }}</p>
@@ -44,7 +44,7 @@
         <h2>{{ __('Specifications') }}</h2>
         <dl class="specs">
           @foreach ($product->specs as $spec)
-            <div><dt>{{ $spec->label }}</dt><dd>{{ $spec->displayValue() }}</dd></div>
+            <div><dt>{{ __($spec->label) }}</dt><dd>{{ $spec->displayValue() }}</dd></div>
           @endforeach
         </dl>
       </section>
