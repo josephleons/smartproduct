@@ -59,6 +59,17 @@
       ]
     },
     {
+      "url": "/sales",
+      "name": "Payments",
+      "icon": "menu-icon icon-base ti tabler-cash",
+      "slug": "sales",
+      "roles": [
+        "owner",
+        "manager",
+        "staff"
+      ]
+    },
+    {
       "url": "/labels",
       "name": "QR & Labels",
       "icon": "menu-icon icon-base ti tabler-qrcode",

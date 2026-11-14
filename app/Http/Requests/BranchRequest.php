@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Services\LipaNamba;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BranchRequest extends FormRequest
@@ -14,11 +15,15 @@ class BranchRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:30'],
             'whatsapp' => ['nullable', 'string', 'max:30'],
             'is_active' => ['boolean'],
+            ...LipaNamba::rules(),
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['is_active' => $this->boolean('is_active')]);
+        $this->merge([
+            'is_active' => $this->boolean('is_active'),
+            'payment_numbers' => LipaNamba::clean($this->input('payment_numbers')),
+        ]);
     }
 }

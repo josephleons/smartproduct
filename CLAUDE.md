@@ -42,7 +42,7 @@ npm install && npm run dev                        # Vite (on host or in a node c
 | Surface | Routes | Layout | Auth |
 |---|---|---|---|
 | Seller dashboard | `routes/web.php`, prefix `/dashboard` and related | Vuexy layout (`resources/views/layouts/`) | `auth` + tenant |
-| Public product page | `GET /p/{token}` | `resources/views/public/layout.blade.php`, lightweight and **not** Vuexy | none |
+| Public product page | `GET /p/{token}` (+ `/p/{token}/pay`) | `resources/views/public/layout.blade.php`, lightweight and **not** Vuexy | none |
 
 The public page must stay fast on cheap Android phones on 3G: no Vuexy bundle, minimal CSS, no heavy JS, server-rendered, at most ~100 KB per page.
 
@@ -90,12 +90,22 @@ Companies have `is_active`. Users of an inactive company are logged out of the d
 - Ignore bots and crawlers by user agent. De-duplicate repeat scans from the same hashed IP and product within 30 minutes for the "unique" metric.
 - Rate-limit public routes (`throttle:60,1`).
 
+### Customer payments from the QR page (approved 2026-11-14)
+
+SmartLabel **records** payments; it never moves money and has no payment gateway for customers.
+
+- The QR page shows **Pay for this item** (only while the price is shown). `/p/{token}/pay` lets the customer choose **Cash** (enter the amount actually paid, which may be a negotiated discount) or **Mobile money** (network cards with the shop's Lipa Namba, plus the SMS transaction code), with name and phone. CSS-only toggles, no JS. Throttled per IP (`sale-requests` limiter).
+- Networks are listed in `config/payments.php`. Each company enters its Lipa Namba per network in Settings > Company profile; a branch may override them (`companies/branches.payment_numbers`, resolved by `App\Services\LipaNamba`).
+- A confirmation creates a `sales` row (`pending`) with a 6-character reference. The customer's status page (`/p/{token}/pay/{reference}`) shows no personal data.
+- Staff review under `/sales` (sidebar **Payments**), installable as a PWA (`public/manifest.webmanifest`, `public/sw.js`, which never caches dashboard data). They scan the sticker with the camera (`smartlabel-scanner.js`: BarcodeDetector, else `jsqr`) or type the SKU, check the device, enter the **amount received**, and approve or reject. Any role may review sales of the branches they can access (`SalePolicy`).
+- Approving (`App\Actions\ReviewSale`) takes one unit off `quantity`; at 0 the product becomes **Sold**. Several pending confirmations per product are allowed. Unreviewed ones expire after `pending_expiry_hours` (24) via `sales:expire`, run hourly.
+
 ## Data model
 
 ```
-companies          id, name, slug, logo_path, phone, whatsapp, email, address, timestamps
+companies          id, name, slug, logo_path, phone, whatsapp, email, address, payment_numbers (json)?, timestamps
 users              id, company_id, branch_id?, name, email, password, role, timestamps
-branches           id, company_id, name, location, phone?, whatsapp?, is_active, timestamps
+branches           id, company_id, name, location, phone?, whatsapp?, payment_numbers (json)?, is_active, timestamps
 categories         id, company_id? (null = system category), name, slug, icon?, timestamps
 category_spec_fields
                    id, category_id, key, label, type (text|number|select|boolean),
@@ -118,6 +128,10 @@ invoices           id, company_id, subscription_id, plan_id, number, plan_name, 
 payments           id, company_id, invoice_id, amount, gateway, method, reference, status (pending|confirmed|failed),
                    submitted_by?, reviewed_by?, confirmed_at?, note?, meta?
 platform_settings  key, value (json)              -- billing settings
+sales              id, company_id, branch_id, product_id, reference (unique), method (cash|mobile), network?,
+                   payment_number?, transaction_code?, customer_name, customer_phone, listed_price, amount,
+                   received_amount?, status (pending|approved|rejected|expired), reviewed_by?, reviewed_at?,
+                   note?, ip_hash, timestamps
 ```
 
 Rules:
@@ -139,7 +153,7 @@ Rules:
 - Use Vuexy components (cards, tables, form layouts, badges, wizard / bs-stepper for Add Product). Do not hand-roll components Vuexy already provides.
 - **Do not edit Vuexy core/vendor files.** Theme overrides go in `resources/assets/` custom SCSS and the template's theme config.
 - Brand colors: primary `#0F6680`, sidebar `#174551`, soft `#EAF4F7`, canvas `#F7FAFB`, text `#1F2D33`.
-- Sidebar navigation: Dashboard, Products, QR & Labels, Branches, Analytics, Settings.
+- Sidebar navigation: Dashboard, Products, Payments, QR & Labels, Branches, Analytics, Settings.
 - Status badges come from one Blade component, `<x-status-badge :status="$product->status" />`, used everywhere.
 - Add Product is a 3-step wizard (Basic info → Specs → Review & label). Category selection loads its spec fields dynamically. The target is under 2 minutes per product.
 - Put user-facing strings in `lang/` (`en` first, `sw` planned), not hardcoded.
@@ -156,7 +170,7 @@ Rules:
 
 ## MVP boundaries
 
-Build only what is in `docs/PROJECT_BRIEF.md` §7. **Do not add** POS, invoicing, accounting, stock transfers, customer accounts, payments or a mobile app. If a task seems to need one of these, stop and ask.
+Build only what is in `docs/PROJECT_BRIEF.md` §7, plus the approved additions above (bulk import, customer payment confirmations with the staff PWA). **Do not add** POS, invoicing, accounting, stock transfers, customer accounts, a payment gateway that moves customer money, or a native mobile app. If a task seems to need one of these, stop and ask.
 
 ## When unsure
 

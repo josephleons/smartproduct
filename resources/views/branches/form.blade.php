@@ -33,6 +33,7 @@
                 <label class="form-label" for="whatsapp">{{ __('WhatsApp') }}</label>
                 <input type="tel" id="whatsapp" name="whatsapp" value="{{ old('whatsapp', $branch->whatsapp) }}" class="form-control @error('whatsapp') is-invalid @enderror">
               </div>
+              <x-lipa-namba-fields :numbers="$branch->payment_numbers ?? []" :hint="__('Only if this branch has its own Lipa Namba. Leave empty to use the company numbers from Settings.')" />
               <div class="col-12">
                 <div class="form-check form-switch">
                   <input type="hidden" name="is_active" value="0">

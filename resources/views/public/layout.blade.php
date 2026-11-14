@@ -8,6 +8,7 @@
   <meta name="theme-color" content="#0F6680">
   <title>@yield('title') · {{ config('variables.templateName') }}</title>
   <link rel="icon" type="image/svg+xml" href="{{ asset('assets/img/favicon/favicon.svg') }}">
+  @yield('head')
   <style>
     :root { --p: #0F6680; --soft: #EAF4F7; --bg: #F7FAFB; --text: #1F2D33; --muted: #5c6b70; --line: #dde6e9; }
     * { box-sizing: border-box; }
@@ -42,6 +43,27 @@
     .foot { text-align: center; margin-top: 20px; }
     .list a { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--text); }
     .list a:last-child { border-bottom: 0; }
+    .btn-pay { background: #1b7a43; color: #fff; border: 0; width: 100%; cursor: pointer; font-family: inherit; }
+    /* Pay form: method and network choices are radio cards, toggled with CSS only (no JS). */
+    .field { margin-top: 14px; }
+    .field label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+    .field input { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 10px; font: inherit; font-size: 16px; background: #fff; }
+    .field input:focus { outline: 2px solid var(--p); border-color: var(--p); }
+    .err { color: #b42318; font-size: 13px; margin-top: 4px; }
+    .alert { background: #fde2e2; color: #b42318; border-radius: 10px; padding: 10px 12px; margin-top: 12px; font-size: 14px; }
+    .ok { background: #dcf6e6; color: #1b7a43; }
+    .sr { position: absolute; opacity: 0; pointer-events: none; }
+    .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+    .opt { display: block; border: 2px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; font-weight: 700; cursor: pointer; background: #fff; }
+    .opt small { display: block; font-weight: 400; color: var(--muted); }
+    .net { text-align: left; border-left-width: 8px; }
+    .net b { display: block; }
+    .net .no { font-size: 18px; letter-spacing: 1px; }
+    .sr:checked + .opt { border-color: var(--p); background: var(--soft); }
+    .sr:focus-visible + .opt { outline: 2px solid var(--p); }
+    .pane { display: none; }
+    #m-cash:checked ~ .pane-cash, #m-mobile:checked ~ .pane-mobile { display: block; }
+    .ref { font-size: 30px; font-weight: 800; letter-spacing: 4px; color: var(--p); text-align: center; margin: 6px 0; }
   </style>
 </head>
 <body>

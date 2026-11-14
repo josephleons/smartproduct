@@ -12,11 +12,11 @@ class Branch extends Model
 {
     use BelongsToCompany, HasFactory;
 
-    protected $fillable = ['company_id', 'name', 'location', 'phone', 'whatsapp', 'is_active'];
+    protected $fillable = ['company_id', 'name', 'location', 'phone', 'whatsapp', 'payment_numbers', 'is_active'];
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean'];
+        return ['is_active' => 'boolean', 'payment_numbers' => 'array'];
     }
 
     public function products(): HasMany

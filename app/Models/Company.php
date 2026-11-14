@@ -13,11 +13,11 @@ class Company extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'logo_path', 'phone', 'whatsapp', 'email', 'address', 'is_active'];
+    protected $fillable = ['name', 'slug', 'logo_path', 'phone', 'whatsapp', 'email', 'address', 'payment_numbers', 'is_active'];
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean'];
+        return ['is_active' => 'boolean', 'payment_numbers' => 'array'];
     }
 
     public function users(): HasMany

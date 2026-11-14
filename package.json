@@ -63,6 +63,7 @@
     "jquery": "~3.7.1",
     "jquery-idletimer": "~1.0.0",
     "jquery.repeater": "~1.2.1",
+    "jsqr": "^1.4.0",
     "jstree": "~3.3.17",
     "jszip": "~3.10.1",
     "katex": "~0.16.22",

@@ -75,6 +75,13 @@
 
    <!-- Favicon -->
    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/img/favicon/favicon.svg') }}" />
+   <!-- Installable staff app (PWA): manifest + service worker registered below -->
+   <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+   <meta name="theme-color" content="#174551">
+   <meta name="mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-title" content="SmartLabel">
+   <link rel="apple-touch-icon" href="{{ asset('assets/img/pwa/icon-192.png') }}">
 
 
    <!-- Include Styles -->
@@ -107,6 +114,11 @@
 <!-- Include Scripts -->
 <!-- $isFront is used to append the front layout scripts only on the front layout otherwise the variable will be blank -->
 @include('layouts.sections.scripts')
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('{{ asset('sw.js') }}').catch(() => {}));
+  }
+</script>
 </body>
 
 </html>

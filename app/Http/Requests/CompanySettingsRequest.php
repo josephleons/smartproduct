@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Services\LipaNamba;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CompanySettingsRequest extends FormRequest
@@ -16,6 +17,12 @@ class CompanySettingsRequest extends FormRequest
             'address' => ['nullable', 'string', 'max:255'],
             'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:1024'],
             'remove_logo' => ['nullable', 'boolean'],
+            ...LipaNamba::rules(),
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['payment_numbers' => LipaNamba::clean($this->input('payment_numbers'))]);
     }
 }

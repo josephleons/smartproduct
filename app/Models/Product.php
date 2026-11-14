@@ -53,6 +53,12 @@ class Product extends Model
         return $this->hasOne(QrCode::class);
     }
 
+    /** Customer payment confirmations from the QR page. */
+    public function sales(): HasMany
+    {
+        return $this->hasMany(Sale::class);
+    }
+
     public function events(): HasMany
     {
         return $this->hasMany(ProductEvent::class);

@@ -53,6 +53,7 @@
                 <label class="form-label" for="address">{{ __('Address') }}</label>
                 <input type="text" id="address" name="address" value="{{ old('address', $company->address) }}" class="form-control @error('address') is-invalid @enderror">
               </div>
+              <x-lipa-namba-fields :numbers="$company->payment_numbers ?? []" />
               <div class="col-12"><button class="btn btn-primary" type="submit">{{ __('Save') }}</button></div>
             </div>
           </form>

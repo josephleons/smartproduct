@@ -9,8 +9,11 @@ use App\Models\Product;
 use App\Models\User;
 use App\Observers\ProductObserver;
 use App\Observers\PublicPageDependencyObserver;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -30,6 +33,9 @@ class AppServiceProvider extends ServiceProvider
         foreach ([Company::class, Branch::class, Category::class] as $model) {
             $model::observe(PublicPageDependencyObserver::class);
         }
+
+        // Customer payment confirmations from QR pages, per visitor IP.
+        RateLimiter::for('sale-requests', fn (Request $request) => Limit::perHour((int) config('payments.max_requests_per_hour', 10))->by($request->ip()));
 
         Gate::define('view-analytics', fn (User $user) => $user->canManage());
         Gate::define('print-labels', fn (User $user) => true);

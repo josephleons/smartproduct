@@ -6,10 +6,10 @@ use App\Enums\EventType;
 use App\Enums\ProductStatus;
 use App\Jobs\RecordProductEvent;
 use App\Models\Product;
-use App\Models\QrCode;
 use App\Models\Scopes\CompanyScope;
 use App\Services\PhoneNumber;
 use App\Services\PublicProductCache;
+use App\Services\PublicProductLookup;
 use App\Services\VisitorContext;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -115,35 +115,14 @@ class PublicProductController extends Controller
         return response($html)->header('Cache-Control', 'public, max-age=60')->header('Vary', 'Cookie');
     }
 
-    /** Uppercased token, or null when it cannot be a valid token. */
     private function normalizeToken(string $token): ?string
     {
-        $token = strtoupper($token);
-
-        return preg_match('/^[2-9A-HJ-NP-Z]{7}$/', $token) ? $token : null;
+        return PublicProductLookup::normalizeToken($token);
     }
 
     private function findProduct(string $token): ?Product
     {
-        $token = $this->normalizeToken($token);
-
-        if (! $token) {
-            return null;
-        }
-
-        $qr = QrCode::where('token', $token)->first();
-
-        // Public token lookup: no authenticated tenant, and a logged-in seller from another
-        // company must still see this page, so the tenant scope is bypassed on purpose.
-        return $qr ? Product::withoutGlobalScope(CompanyScope::class)
-            ->with([
-                'qrCode',
-                'company',
-                'branch' => fn ($q) => $q->withoutGlobalScope(CompanyScope::class),
-                'specs',
-                'category',
-            ])
-            ->find($qr->product_id) : null;
+        return PublicProductLookup::find($token);
     }
 
     private function track(Request $request, int $productId, EventType $type): void

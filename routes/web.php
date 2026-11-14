@@ -17,6 +17,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImportController;
 use App\Http\Controllers\ProductQuickUpdateController;
 use App\Http\Controllers\PublicProductController;
+use App\Http\Controllers\PublicSaleController;
+use App\Http\Controllers\SaleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +32,11 @@ Route::middleware('throttle:60,1')->group(function () {
         ->whereIn('channel', ['whatsapp', 'call'])
         ->name('public.product.go');
     Route::get('/p/{token}/similar', [PublicProductController::class, 'similar'])->name('public.product.similar');
+
+    // Customer confirms a cash or Lipa Namba payment; staff approve it under /sales.
+    Route::get('/p/{token}/pay', [PublicSaleController::class, 'create'])->name('public.sale.create');
+    Route::post('/p/{token}/pay', [PublicSaleController::class, 'store'])->middleware('throttle:sale-requests')->name('public.sale.store');
+    Route::get('/p/{token}/pay/{reference}', [PublicSaleController::class, 'status'])->name('public.sale.status');
 });
 
 // Login, logout and password reset routes come from Laravel Fortify
@@ -55,6 +62,14 @@ Route::middleware(['auth', 'tenant', 'subscription'])->group(function () {
 
     Route::resource('products', ProductController::class);
     Route::patch('/products/{product}/quick', ProductQuickUpdateController::class)->name('products.quick-update');
+
+    // Payments from the QR page: list, scan a sticker, approve or reject.
+    Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
+    Route::get('/sales/lookup', [SaleController::class, 'lookup'])->name('sales.lookup');
+    Route::get('/sales/product/{code}', [SaleController::class, 'product'])->name('sales.product');
+    Route::get('/sales/{sale}', [SaleController::class, 'show'])->whereNumber('sale')->name('sales.show');
+    Route::post('/sales/{sale}/approve', [SaleController::class, 'approve'])->whereNumber('sale')->name('sales.approve');
+    Route::post('/sales/{sale}/reject', [SaleController::class, 'reject'])->whereNumber('sale')->name('sales.reject');
 
     Route::get('/categories/{category}/fields', CategoryFieldsController::class)->name('categories.fields');
 

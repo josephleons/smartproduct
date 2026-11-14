@@ -29,6 +29,9 @@
       </div>
 
       <div class="btns">
+        @if ($showPrice)
+          <a class="btn btn-pay" href="{{ route('public.sale.create', $token) }}" rel="nofollow">{{ __('Pay for this item') }}</a>
+        @endif
         @if ($whatsapp)
           <a class="btn btn-wa" href="{{ route('public.product.go', [$token, 'whatsapp']) }}" rel="nofollow">{{ __('Chat on WhatsApp') }}</a>
         @endif

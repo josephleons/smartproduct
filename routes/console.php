@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\ExpireSales;
 use App\Enums\UserRole;
 use App\Jobs\CheckSubscriptions;
 use App\Models\User;
@@ -9,6 +10,11 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 
 Schedule::job(new CheckSubscriptions)->hourly()->withoutOverlapping();
+Schedule::command('sales:expire')->hourly()->withoutOverlapping();
+
+Artisan::command('sales:expire', function (ExpireSales $expire) {
+    $this->info($expire->handle().' unreviewed payment request(s) marked expired.');
+})->purpose('Expire customer payment requests that staff did not review in time (normally hourly)');
 
 Artisan::command('billing:check', function () {
     CheckSubscriptions::dispatchSync();
