@@ -92,7 +92,10 @@ services:
     restart: unless-stopped
     environment:
       PMA_HOST: mysql
-      PMA_ABSOLUTE_URI: https://smartlabel.shipafricatz.com/phpmyadmin/
+      # Public URL when served behind the HTTPS reverse proxy (set in .env on the server).
+      # Leave empty locally: phpMyAdmin then detects http://localhost itself; a fixed
+      # https:// value there causes the "mismatch between HTTPS" warning.
+      PMA_ABSOLUTE_URI: ${PMA_ABSOLUTE_URI:-}
     ports:
       - "127.0.0.1:${FORWARD_PMA_PORT:-8096}:80"
     networks:
