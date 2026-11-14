@@ -9,6 +9,7 @@ use App\Models\ProductEvent;
 use App\Services\PublicProductCache;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
@@ -137,6 +138,58 @@ class PublicProductTest extends TestCase
         $this->assertFalse(Cache::has(PublicProductCache::key($token)));
 
         $this->get("/p/{$token}")->assertSee('TZS 700,000');
+    }
+
+    public function test_company_and_branch_edits_show_immediately_on_cached_pages(): void
+    {
+        Queue::fake();
+        $product = $this->product();
+        $token = $product->qrCode->token;
+        $product->company->update(['name' => 'Old Shop Name']);
+
+        $this->get("/p/{$token}")->assertSee('Old Shop Name');
+
+        // Edits in the same second as the previous write must still show.
+        $product->company->update(['name' => 'New Shop Name']);
+        $this->get("/p/{$token}")->assertSee('New Shop Name')->assertDontSee('Old Shop Name');
+
+        $product->branch->update(['location' => 'Kariakoo, Mtaa wa Congo']);
+        $this->get("/p/{$token}")->assertSee('Kariakoo, Mtaa wa Congo');
+
+        $product->category->update(['name' => 'Gaming laptops']);
+        $this->get("/p/{$token}")->assertSee('Gaming laptops');
+    }
+
+    public function test_cached_page_is_served_without_database_queries_and_still_tracks_the_scan(): void
+    {
+        Queue::fake();
+        $product = $this->product();
+        $token = $product->qrCode->token;
+
+        $this->get("/p/{$token}")->assertOk(); // warm the cache
+
+        $queries = 0;
+        DB::listen(function () use (&$queries) {
+            $queries++;
+        });
+
+        $this->get('/p/'.strtolower($token))->assertOk()->assertSee($product->model)->assertHeader('Vary', 'Cookie');
+
+        $this->assertSame(0, $queries);
+        Queue::assertPushed(RecordProductEvent::class, 2);
+        Queue::assertPushed(RecordProductEvent::class, fn ($job) => $job->productId === $product->id);
+    }
+
+    public function test_deleted_product_is_not_served_from_cache(): void
+    {
+        Queue::fake();
+        $product = $this->product();
+        $token = $product->qrCode->token;
+
+        $this->get("/p/{$token}")->assertOk();
+        $product->delete();
+
+        $this->get("/p/{$token}")->assertNotFound();
     }
 
     public function test_public_routes_are_rate_limited(): void

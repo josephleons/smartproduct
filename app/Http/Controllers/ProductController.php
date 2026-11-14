@@ -25,13 +25,7 @@ class ProductController extends Controller
         $products = Product::query()
             ->visibleTo($user)
             ->with(['branch', 'category', 'qrCode'])
-            ->when($request->string('q')->trim()->value(), function ($query, string $search) {
-                $query->where(fn ($q) => $q
-                    ->where('brand', 'like', "%{$search}%")
-                    ->orWhere('model', 'like', "%{$search}%")
-                    ->orWhere('sku', 'like', "%{$search}%")
-                    ->orWhere('serial_number', 'like', "%{$search}%"));
-            })
+            ->search($request->string('q')->value())
             ->when($request->integer('category'), fn ($q, $id) => $q->where('category_id', $id))
             ->when($request->integer('branch'), fn ($q, $id) => $q->where('branch_id', $id))
             ->when($request->string('status')->value(), fn ($q, $status) => $q->where('status', $status))
@@ -53,13 +47,16 @@ class ProductController extends Controller
             return $limited;
         }
 
+        $source = $request->filled('from') ? $this->duplicateSource($request) : null;
+
         return view('products.form', [
-            'product' => new Product([
+            'product' => $source ? $this->duplicate($source) : new Product([
                 'condition' => ProductCondition::New,
                 'status' => ProductStatus::Available,
                 'quantity' => 1,
                 'branch_id' => $request->user()->branch_id,
             ]),
+            'source' => $source,
             ...$this->formOptions($request),
         ]);
     }
@@ -118,6 +115,37 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->route('products.index')->with('success', __('Product deleted.'));
+    }
+
+    /** The product to copy for "Duplicate": it must be one the user can see. */
+    private function duplicateSource(Request $request): Product
+    {
+        $source = Product::query()->visibleTo($request->user())->with('specs')->findOrFail($request->integer('from'));
+        $this->authorize('view', $source);
+
+        return $source;
+    }
+
+    /**
+     * An unsaved copy to pre-fill the Add Product wizard. The serial number is left
+     * blank because it identifies one unit; the SKU and QR token are created on save.
+     */
+    private function duplicate(Product $source): Product
+    {
+        $copy = new Product($source->only([
+            'branch_id', 'category_id', 'brand', 'model', 'description', 'condition',
+            'price', 'warranty_months', 'status',
+        ]));
+        $copy->quantity = 1;
+
+        // Sold or inactive sources are usually copied for a new unit that is for sale.
+        if (! $source->status->showsPrice()) {
+            $copy->status = ProductStatus::Available;
+        }
+
+        $copy->setRelation('specs', $source->specs);
+
+        return $copy;
     }
 
     /** @return array<string, mixed> */

@@ -23,24 +23,34 @@ class PublicProductController extends Controller
 {
     public function show(Request $request, string $token): Response
     {
-        $product = $this->findProduct($token);
+        $token = $this->normalizeToken($token);
+
+        // Cache hit: no database queries at all, only the scan event goes to the queue.
+        if ($token && ($cached = PublicProductCache::get($token))) {
+            $this->track($request, $cached['product_id'], EventType::Scan);
+
+            return $this->pageResponse($cached['html']);
+        }
+
+        $product = $token ? $this->findProduct($token) : null;
 
         if (! $product) {
             return response()->view('public.not-found', [], 404);
         }
 
-        $this->track($request, $product, EventType::Scan);
+        $this->track($request, $product->id, EventType::Scan);
 
-        $html = PublicProductCache::remember($product->qrCode->token, fn () => view('public.product', [
+        $html = view('public.product', [
             'product' => $product,
             'token' => $product->qrCode->token,
             'showPrice' => $product->status->showsPrice(),
             'whatsapp' => $this->whatsappNumber($product),
             'phone' => $this->phoneNumber($product),
-        ])->render());
+        ])->render();
 
-        // Vary on Cookie: the language switcher sets a cookie, and the page must follow it.
-        return response($html)->header('Cache-Control', 'public, max-age=60')->header('Vary', 'Cookie');
+        PublicProductCache::put($product, $html);
+
+        return $this->pageResponse($html);
     }
 
     public function go(Request $request, string $token, string $channel): RedirectResponse|Response
@@ -54,7 +64,7 @@ class PublicProductController extends Controller
         $product->loadMissing(['company', 'branch']);
 
         if ($channel === 'whatsapp' && ($number = $this->whatsappNumber($product))) {
-            $this->track($request, $product, EventType::WhatsappClick);
+            $this->track($request, $product->id, EventType::WhatsappClick);
             $text = __('Hello, I am interested in :product (:sku). :url', [
                 'product' => $product->name(),
                 'sku' => $product->sku,
@@ -65,7 +75,7 @@ class PublicProductController extends Controller
         }
 
         if ($channel === 'call' && ($number = $this->phoneNumber($product))) {
-            $this->track($request, $product, EventType::CallClick);
+            $this->track($request, $product->id, EventType::CallClick);
 
             return redirect()->away('tel:+'.$number);
         }
@@ -81,7 +91,7 @@ class PublicProductController extends Controller
             return response()->view('public.not-found', [], 404);
         }
 
-        $this->track($request, $product, EventType::SimilarClick);
+        $this->track($request, $product->id, EventType::SimilarClick);
         $product->loadMissing('company');
 
         // Public route: no tenant user, so filter by the product's company explicitly.
@@ -99,11 +109,25 @@ class PublicProductController extends Controller
         return response()->view('public.similar', ['product' => $product, 'similar' => $similar, 'token' => $token]);
     }
 
-    private function findProduct(string $token): ?Product
+    private function pageResponse(string $html): Response
+    {
+        // Vary on Cookie: the language switcher sets a cookie, and the page must follow it.
+        return response($html)->header('Cache-Control', 'public, max-age=60')->header('Vary', 'Cookie');
+    }
+
+    /** Uppercased token, or null when it cannot be a valid token. */
+    private function normalizeToken(string $token): ?string
     {
         $token = strtoupper($token);
 
-        if (! preg_match('/^[2-9A-HJ-NP-Z]{7}$/', $token)) {
+        return preg_match('/^[2-9A-HJ-NP-Z]{7}$/', $token) ? $token : null;
+    }
+
+    private function findProduct(string $token): ?Product
+    {
+        $token = $this->normalizeToken($token);
+
+        if (! $token) {
             return null;
         }
 
@@ -122,7 +146,7 @@ class PublicProductController extends Controller
             ->find($qr->product_id) : null;
     }
 
-    private function track(Request $request, Product $product, EventType $type): void
+    private function track(Request $request, int $productId, EventType $type): void
     {
         $userAgent = $request->userAgent();
 
@@ -131,7 +155,7 @@ class PublicProductController extends Controller
         }
 
         RecordProductEvent::dispatch(
-            $product->id,
+            $productId,
             $type,
             VisitorContext::hashIp($request->ip()),
             $userAgent,

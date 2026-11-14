@@ -22,14 +22,30 @@ class AnalyticsService
         $days = $filters['days'] ?? 30;
         $from = CarbonImmutable::today()->subDays($days - 1);
 
-        $base = fn () => $this->events($user, $from, $filters);
+        // All headline counts in one pass over the period's events instead of one query each.
+        $totals = $this->events($user, $from, $filters)
+            ->toBase()
+            ->selectRaw(
+                'SUM(CASE WHEN type = ? THEN 1 ELSE 0 END) AS scans,
+                 SUM(CASE WHEN type = ? AND is_unique = 1 THEN 1 ELSE 0 END) AS unique_scans,
+                 COUNT(DISTINCT CASE WHEN type = ? THEN product_id END) AS products_scanned,
+                 SUM(CASE WHEN type = ? THEN 1 ELSE 0 END) AS whatsapp,
+                 SUM(CASE WHEN type = ? THEN 1 ELSE 0 END) AS calls,
+                 SUM(CASE WHEN type = ? THEN 1 ELSE 0 END) AS similar',
+                [
+                    EventType::Scan->value, EventType::Scan->value, EventType::Scan->value,
+                    EventType::WhatsappClick->value, EventType::CallClick->value, EventType::SimilarClick->value,
+                ],
+            )
+            ->first();
 
-        $scans = $base()->where('type', EventType::Scan)->count();
-        $uniqueScans = $base()->where('type', EventType::Scan)->where('is_unique', true)->count();
-        $productsScanned = $base()->where('type', EventType::Scan)->distinct()->count('product_id');
-        $whatsapp = $base()->where('type', EventType::WhatsappClick)->count();
-        $calls = $base()->where('type', EventType::CallClick)->count();
-        $similar = $base()->where('type', EventType::SimilarClick)->count();
+        // SUM() is NULL when no rows match.
+        $scans = (int) $totals->scans;
+        $uniqueScans = (int) $totals->unique_scans;
+        $productsScanned = (int) $totals->products_scanned;
+        $whatsapp = (int) $totals->whatsapp;
+        $calls = (int) $totals->calls;
+        $similar = (int) $totals->similar;
 
         return [
             'from' => $from,

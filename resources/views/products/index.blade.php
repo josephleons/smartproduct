@@ -85,6 +85,7 @@
                 <td class="text-end text-nowrap">
                   <a href="{{ route('products.edit', $product) }}" class="btn btn-icon btn-text-secondary rounded-pill" title="{{ __('Edit') }}"><i class="icon-base ti tabler-edit"></i></a>
                   <a href="{{ route('labels.index', ['products' => [$product->id]]) }}" class="btn btn-icon btn-text-secondary rounded-pill" title="{{ __('Print label') }}"><i class="icon-base ti tabler-printer"></i></a>
+                  <a href="{{ route('products.create', ['from' => $product->id]) }}" class="btn btn-icon btn-text-secondary rounded-pill" title="{{ __('Duplicate') }}"><i class="icon-base ti tabler-copy"></i></a>
                 </td>
               </tr>
             @empty

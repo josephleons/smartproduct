@@ -2,7 +2,8 @@
 
 @php
   $editing = $product->exists;
-  $specValues = old('specs', $product->exists
+  // Edit and Duplicate both arrive with specs loaded; a blank Add form has none.
+  $specValues = old('specs', $product->relationLoaded('specs')
       ? $product->specs->mapWithKeys(fn ($s) => [$s->key => $s->value])->all()
       : []);
   $basicFields = ['category_id', 'branch_id', 'brand', 'model', 'condition', 'price', 'quantity', 'status', 'serial_number', 'warranty_months', 'description'];
@@ -33,12 +34,14 @@
       <p class="mb-0 text-body-secondary">
         @if ($editing)
           {{ __('The QR code stays the same, so printed labels keep working.') }}
+        @elseif ($source ?? null)
+          {{ __('Copied from :name (:sku). Check the serial number and price, then save. The copy gets its own SKU and QR code.', ['name' => $source->name(), 'sku' => $source->sku]) }}
         @else
           {{ __('Three quick steps. Only the fields for the chosen category appear.') }}
         @endif
       </p>
     </div>
-    <a href="{{ $editing ? route('products.show', $product) : route('products.index') }}" class="btn btn-label-secondary">{{ __('Cancel') }}</a>
+    <a href="{{ $editing ? route('products.show', $product) : (($source ?? null) ? route('products.show', $source) : route('products.index')) }}" class="btn btn-label-secondary">{{ __('Cancel') }}</a>
   </div>
 
   @if ($errors->any())

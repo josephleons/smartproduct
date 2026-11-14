@@ -48,6 +48,7 @@ Route::middleware(['auth', 'tenant', 'subscription'])->group(function () {
     Route::get('/categories/{category}/fields', CategoryFieldsController::class)->name('categories.fields');
 
     Route::get('/labels', [LabelController::class, 'index'])->name('labels.index');
+    Route::get('/labels/products', [LabelController::class, 'search'])->name('labels.products');
     Route::get('/labels/preview', [LabelController::class, 'preview'])->name('labels.preview');
     Route::get('/labels/pdf', [LabelController::class, 'pdf'])->name('labels.pdf');
 

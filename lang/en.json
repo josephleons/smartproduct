@@ -398,5 +398,9 @@
   "Smartphone": "Smartphone",
   "Storage": "Storage",
   "TV": "TV",
-  "USB ports": "USB ports"
+  "USB ports": "USB ports",
+  "Duplicate": "Duplicate",
+  "Add another unit with the same details": "Add another unit with the same details",
+  "Copied from :name (:sku). Check the serial number and price, then save. The copy gets its own SKU and QR code.": "Copied from :name (:sku). Check the serial number and price, then save. The copy gets its own SKU and QR code.",
+  "Search by brand, model, SKU or serial…": "Search by brand, model, SKU or serial…"
 }

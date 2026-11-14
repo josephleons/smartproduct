@@ -2,9 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Branch;
+use App\Models\Category;
+use App\Models\Company;
 use App\Models\Product;
 use App\Models\User;
 use App\Observers\ProductObserver;
+use App\Observers\PublicPageDependencyObserver;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Vite;
@@ -22,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
 
         Product::observe(ProductObserver::class);
+        // Their details are shown on public product pages, which are cached.
+        foreach ([Company::class, Branch::class, Category::class] as $model) {
+            $model::observe(PublicPageDependencyObserver::class);
+        }
 
         Gate::define('view-analytics', fn (User $user) => $user->canManage());
         Gate::define('print-labels', fn (User $user) => true);

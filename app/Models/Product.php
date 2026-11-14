@@ -78,6 +78,18 @@ class Product extends Model
         return $this->qrCode?->url();
     }
 
+    /** Free-text search over brand, model, SKU and serial number. */
+    public function scopeSearch(Builder $query, ?string $term): void
+    {
+        $term = trim((string) $term);
+
+        $query->when($term !== '', fn (Builder $q) => $q->where(fn (Builder $w) => $w
+            ->where('brand', 'like', "%{$term}%")
+            ->orWhere('model', 'like', "%{$term}%")
+            ->orWhere('sku', 'like', "%{$term}%")
+            ->orWhere('serial_number', 'like', "%{$term}%")));
+    }
+
     /** Products a user may see: everything in the company, or one branch for branch-restricted staff. */
     public function scopeVisibleTo(Builder $query, User $user): void
     {

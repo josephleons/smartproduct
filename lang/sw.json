@@ -398,5 +398,9 @@
   "Your plan allows up to :limit :resource. Upgrade your plan to add more.": "Kifurushi chako kinaruhusu hadi :limit (:resource). Pandisha kifurushi kuongeza zaidi.",
   "Your subscription is unpaid, so your account is read-only. Customers can still scan your labels.": "Usajili wako haujalipwa, kwa hiyo akaunti yako ni ya kusoma tu. Wateja bado wanaweza kuskani lebo zako.",
   "Your subscription is unpaid, so your account is read-only. Pay your bill to add products and print labels again.": "Usajili wako haujalipwa, kwa hiyo akaunti yako ni ya kusoma tu. Lipa bili yako ili uongeze bidhaa na kuchapa lebo tena.",
-  "Your subscription payment is overdue. Pay before :date to keep full access.": "Malipo ya usajili wako yamechelewa. Lipa kabla ya :date kuendelea kutumia kila kitu."
+  "Your subscription payment is overdue. Pay before :date to keep full access.": "Malipo ya usajili wako yamechelewa. Lipa kabla ya :date kuendelea kutumia kila kitu.",
+  "Duplicate": "Nakili",
+  "Add another unit with the same details": "Ongeza kipande kingine chenye maelezo yaleyale",
+  "Copied from :name (:sku). Check the serial number and price, then save. The copy gets its own SKU and QR code.": "Imenakiliwa kutoka :name (:sku). Kagua namba ya serial na bei, kisha hifadhi. Nakala itapata SKU na QR code yake.",
+  "Search by brand, model, SKU or serial…": "Tafuta kwa chapa, modeli, SKU au serial…"
 }

@@ -29,7 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (window.jQuery && jQuery.fn.select2) {
     jQuery(select)
-      .select2({ placeholder: select.dataset.placeholder, width: '100%' })
+      .select2({
+        placeholder: select.dataset.placeholder,
+        width: '100%',
+        // Products are searched on the server, a page at a time, so large catalogues stay fast.
+        ajax: {
+          url: select.dataset.searchUrl,
+          dataType: 'json',
+          delay: 250,
+          data: params => ({ q: params.term || '', page: params.page || 1 })
+        }
+      })
       .on('change', refresh);
   }
 

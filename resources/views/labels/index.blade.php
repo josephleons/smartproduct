@@ -27,9 +27,10 @@
           <form id="labelForm" data-preview-url="{{ route('labels.preview') }}" data-pdf-url="{{ route('labels.pdf') }}">
             <div class="mb-4">
               <label class="form-label" for="products">{{ __('Products') }}</label>
-              <select id="products" name="products[]" class="form-select select2" multiple data-placeholder="{{ __('Search products…') }}">
-                @foreach ($products as $product)
-                  <option value="{{ $product->id }}" @selected(in_array($product->id, $selected, true))>{{ $product->name() }} ({{ $product->sku }})</option>
+              <select id="products" name="products[]" class="form-select select2" multiple
+                data-placeholder="{{ __('Search by brand, model, SKU or serial…') }}" data-search-url="{{ route('labels.products') }}">
+                @foreach ($selected as $product)
+                  <option value="{{ $product->id }}" selected>{{ $product->name() }} ({{ $product->sku }})</option>
                 @endforeach
               </select>
             </div>

@@ -16,6 +16,9 @@
       @can('update', $product)
         <a href="{{ route('products.edit', $product) }}" class="btn btn-label-primary"><i class="icon-base ti tabler-edit me-1"></i>{{ __('Edit') }}</a>
       @endcan
+      @can('create', App\Models\Product::class)
+        <a href="{{ route('products.create', ['from' => $product->id]) }}" class="btn btn-label-primary" title="{{ __('Add another unit with the same details') }}"><i class="icon-base ti tabler-copy me-1"></i>{{ __('Duplicate') }}</a>
+      @endcan
       @can('delete', $product)
         <form method="POST" action="{{ route('products.destroy', $product) }}" onsubmit="return confirm(@js(__('Delete this product? Its printed label will show a not-found page.')))">
           @csrf

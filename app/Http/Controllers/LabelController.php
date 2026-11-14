@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LabelRequest;
 use App\Models\Product;
 use App\Services\LabelRenderer;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
@@ -18,12 +19,39 @@ class LabelController extends Controller
     {
         $this->authorize('print-labels');
 
+        // Only the preselected products are rendered; the picker searches the rest on demand.
+        $selected = array_map('intval', (array) $request->input('products', []));
+
         return view('labels.index', [
-            'products' => Product::query()->visibleTo($request->user())->latest()->limit(500)->get(['id', 'brand', 'model', 'sku']),
-            'selected' => array_map('intval', (array) $request->input('products', [])),
+            'selected' => Product::query()
+                ->visibleTo($request->user())
+                ->whereKey(array_slice($selected, 0, 200))
+                ->get(['id', 'brand', 'model', 'sku'])
+                ->sortBy(fn (Product $p) => array_search($p->id, $selected))
+                ->values(),
             'templates' => config('labels.templates'),
             'defaultTemplate' => config('labels.default'),
             'fields' => config('labels.fields'),
+        ]);
+    }
+
+    /** Product picker search, in the shape select2 expects: { results, pagination: { more } }. */
+    public function search(Request $request): JsonResponse
+    {
+        $this->authorize('print-labels');
+
+        $page = Product::query()
+            ->visibleTo($request->user())
+            ->search($request->string('q')->value())
+            ->latest()
+            ->simplePaginate(20, ['id', 'brand', 'model', 'sku']);
+
+        return response()->json([
+            'results' => $page->getCollection()->map(fn (Product $p) => [
+                'id' => $p->id,
+                'text' => $p->name().' ('.$p->sku.')',
+            ]),
+            'pagination' => ['more' => $page->hasMorePages()],
         ]);
     }
 
