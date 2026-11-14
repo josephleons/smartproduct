@@ -8,9 +8,14 @@
       <h4 class="mb-1">{{ __('Products') }}</h4>
       <p class="mb-0 text-body-secondary">{{ __('Every product gets a permanent QR label.') }}</p>
     </div>
-    <a href="{{ route('products.create') }}" class="btn btn-primary">
-      <i class="icon-base ti tabler-plus me-1"></i>{{ __('Add product') }}
-    </a>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="{{ route('products.import.create') }}" class="btn btn-label-primary">
+        <i class="icon-base ti tabler-file-import me-1"></i>{{ __('Import from Excel') }}
+      </a>
+      <a href="{{ route('products.create') }}" class="btn btn-primary">
+        <i class="icon-base ti tabler-plus me-1"></i>{{ __('Add product') }}
+      </a>
+    </div>
   </div>
 
   <div class="card">

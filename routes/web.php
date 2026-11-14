@@ -14,6 +14,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LabelController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductImportController;
 use App\Http\Controllers\ProductQuickUpdateController;
 use App\Http\Controllers\PublicProductController;
 use App\Http\Controllers\UserController;
@@ -41,6 +42,16 @@ Route::get('/language/{locale}', LocaleController::class)->name('locale.switch')
 
 Route::middleware(['auth', 'tenant', 'subscription'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    // Bulk import, registered before the resource so "import" is not taken for a product id.
+    Route::controller(ProductImportController::class)->prefix('products/import')->name('products.import.')->group(function () {
+        Route::get('/', 'create')->name('create');
+        Route::get('/template', 'template')->name('template');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{import}', 'show')->whereUuid('import')->name('show');
+        Route::post('/{import}', 'confirm')->whereUuid('import')->name('confirm');
+        Route::get('/{import}/result', 'result')->whereUuid('import')->name('result');
+    });
 
     Route::resource('products', ProductController::class);
     Route::patch('/products/{product}/quick', ProductQuickUpdateController::class)->name('products.quick-update');
