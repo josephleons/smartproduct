@@ -535,5 +535,7 @@
   "payment method": "payment method",
   "transaction code": "transaction code",
   "your name": "your name",
-  "your phone number": "your phone number"
+  "your phone number": "your phone number",
+  "This product is registered at the :branch branch. You can only handle payments for :yours. Ask a manager to check the product's branch or your account.": "This product is registered at the :branch branch. You can only handle payments for :yours. Ask a manager to check the product's branch or your account.",
+  "your branch": "your branch"
 }

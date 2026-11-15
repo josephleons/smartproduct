@@ -535,5 +535,7 @@
   "payment method": "njia ya malipo",
   "transaction code": "msimbo wa muamala",
   "your name": "jina lako",
-  "your phone number": "namba yako ya simu"
+  "your phone number": "namba yako ya simu",
+  "This product is registered at the :branch branch. You can only handle payments for :yours. Ask a manager to check the product's branch or your account.": "Bidhaa hii imesajiliwa kwenye tawi la :branch. Wewe unaruhusiwa kushughulikia malipo ya :yours tu. Muombe meneja akague tawi la bidhaa au akaunti yako.",
+  "your branch": "tawi lako"
 }

@@ -72,7 +72,13 @@ class SaleController extends Controller
             return redirect()->route('sales.index')->with('error', __('No product of yours has the code :code.', ['code' => $code]));
         }
 
-        $this->authorize('view', $product);
+        // Branch-restricted staff scanning another branch's sticker: say which branch, not a bare 403.
+        if ($request->user()->cannot('view', $product)) {
+            return redirect()->route('sales.index')->with('error', __('This product is registered at the :branch branch. You can only handle payments for :yours. Ask a manager to check the product\'s branch or your account.', [
+                'branch' => $product->branch->name,
+                'yours' => $request->user()->branch?->name ?? __('your branch'),
+            ]));
+        }
 
         return view('sales.product', [
             'product' => $product,

@@ -244,7 +244,10 @@ class SaleTest extends TestCase
         $sale = $this->sale($theirs, ['customer_name' => 'Other Branch Buyer']);
 
         $this->actingAs($staff)->get('/sales')->assertDontSee('Other Branch Buyer');
-        $this->actingAs($staff)->get('/sales/product/'.$this->token($theirs))->assertForbidden();
+        $this->actingAs($staff)->get('/sales/product/'.$this->token($theirs))
+            ->assertRedirect('/sales')
+            ->assertSessionHas('error', fn ($message) => str_contains($message, $otherBranch->name) && str_contains($message, $this->firstBranch($staff)->name));
+        $this->actingAs($staff)->get('/sales/product/'.$this->token(Product::factory()->for($this->firstBranch($staff))->create()))->assertOk();
         $this->actingAs($staff)->post("/sales/{$sale->id}/approve", ['received_amount' => 1])->assertForbidden();
     }
 
