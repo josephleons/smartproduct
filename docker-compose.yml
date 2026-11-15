@@ -78,6 +78,11 @@ services:
   redis:
     image: redis:7-alpine
     container_name: smartlabel_redis
+    # Require a password when REDIS_PASSWORD is set in .env (production). Locally it is
+    # empty or "null" (what Laravel reads as no password), so Redis starts without one.
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    command: ["sh", "-c", "if [ -n \"$$REDIS_PASSWORD\" ] && [ \"$$REDIS_PASSWORD\" != null ]; then exec docker-entrypoint.sh redis-server --requirepass \"$$REDIS_PASSWORD\"; else exec docker-entrypoint.sh redis-server; fi"]
     restart: unless-stopped
     ports:
       - "127.0.0.1:${FORWARD_REDIS_PORT:-6385}:6379"
